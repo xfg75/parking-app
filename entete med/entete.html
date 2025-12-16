@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>En-tête du Cabinet - Design Moderne</title>
+    <!-- Ajout de la police de caractères "Inter" depuis Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Style général pour le corps du document */
+        body {
+            font-family: 'Inter', Arial, sans-serif; /* Nouvelle police */
+            margin: 20px;
+            background-color: #f8f9fa; /* Fond de page très clair */
+            color: #495057; /* Couleur de texte plus douce */
+        }
+
+        /* Conteneur principal de l'en-tête */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff; /* Fond blanc pur */
+            padding: 20px 30px;
+            border-radius: 12px; /* Bords plus arrondis */
+            border: 1px solid #e9ecef; /* Bordure fine et discrète */
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05); /* Ombre portée douce */
+        }
+
+        /* Style pour chaque colonne */
+        .column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0 20px; /* Espace intérieur pour aérer */
+        }
+        
+        /* Séparateurs entre les colonnes */
+        .left-column, .center-column {
+            border-right: 1px solid #e9ecef;
+        }
+
+        /* Alignement spécifique pour chaque colonne */
+        .left-column {
+            align-items: flex-start;
+        }
+        .center-column {
+            align-items: center;
+        }
+        .right-column {
+            align-items: flex-end;
+        }
+
+        /* Style pour les textes */
+        .header-container h2 {
+            margin: 0 0 8px 0;
+            font-size: 1.2em;
+            font-weight: 700; /* Plus gras pour le titre */
+            color: #212529; /* Noir plus profond */
+        }
+
+        .header-container p {
+            margin: 5px 0;
+            font-size: 0.95em;
+            line-height: 1.5; /* Hauteur de ligne améliorée */
+        }
+        
+        /* Ligne de contact (email, tel) avec icône */
+        .contact-line {
+            display: flex;
+            align-items: center;
+            gap: 8px; /* Espace entre l'icône et le texte */
+        }
+        
+        .contact-line svg {
+            width: 16px;
+            height: 16px;
+            opacity: 0.7;
+        }
+
+        /* Style pour le logo */
+        .logo {
+            max-width: 400px; /* Taille du logo augmentée */
+            margin-bottom: 0;
+        }
+        
+        /* Style pour le texte sous le logo */
+        .logo-text {
+            font-weight: 600;
+            color: #005a8d;
+            font-size: 1.1em;
+        }
+        
+        /* --- Responsive Design pour les petits écrans (mobiles) --- */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .left-column, .center-column, .right-column {
+                align-items: center;
+                padding: 20px 0;
+            }
+            .left-column, .center-column {
+                border-right: none; /* On enlève le séparateur vertical */
+                border-bottom: 1px solid #e9ecef; /* On le remplace par un séparateur horizontal */
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Aperçu de votre en-tête</h1>
+    <p>Ci-dessous se trouve votre en-tête. Pour le modifier, ouvrez ce fichier avec un éditeur de texte.</p>
+
+    <!-- ================================================================= -->
+    <!-- =============== DÉBUT DE L'EN-TÊTE MODIFIABLE =============== -->
+    <!-- ================================================================= -->
+    <div class="header-container">
+
+        <!-- ===== COLONNE DE GAUCHE ===== -->
+        <div class="column left-column">
+            <!-- MODIFIEZ ICI : Le nom du cabinet -->
+            <h2>Cabinet de Gynécologie Obstétrique</h2>
+            
+            <!-- MODIFIEZ ICI : Le nom du docteur -->
+            <p>Dr Thomas CHARBONNIER</p>
+            
+            <!-- MODIFIEZ ICI : L'adresse email -->
+            <p class="contact-line">
+                <!-- Icône email (ne pas toucher) -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M1.5 4.5H22.5V6.182L12.331 11.963C12.124 12.081 11.876 12.081 11.669 11.963L1.5 6.182V4.5ZM1.5 7.913L11.669 13.694C11.876 13.812 12.124 13.812 12.331 13.694L22.5 7.913V19.5H1.5V7.913Z"></path></svg>
+                <span>secretariatimf9@fertilite.net / docteur@charbo.pro</span>
+            </p>
+        </div>
+
+        <!-- ===== COLONNE CENTRALE (LOGO) ===== -->
+        <div class="column center-column">
+            <!-- MODIFIEZ ICI : Le chemin vers votre logo. -->
+            <!-- Vous pouvez utiliser un lien web (https://...) ou un fichier local (ex: "mon_logo.png") -->
+            <img src="/images/logo.jpg" alt="Logo IMF - Institut Médical de Fertilité" class="logo">
+            
+        </div>
+
+        <!-- ===== COLONNE DE DROITE ===== -->
+        <div class="column right-column">
+            <!-- MODIFIEZ ICI : L'adresse postale -->
+            <p style="text-align: right;">3, rue Pierre Haret<br>75009 Paris</p>
+
+            <!-- MODIFIEZ ICI : Le numéro de téléphone -->
+            <p class="contact-line">
+                <!-- Icône téléphone (ne pas toucher) -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16.579 14.232C15.793 14.232 15.021 14.103 14.274 13.86L12.636 15.5C13.67 16.272 14.815 16.791 16.035 16.945L16.545 15.105C16.562 15.102 16.573 15.105 16.579 15.105C17.295 15.105 17.961 14.931 18.543 14.592L19.497 15.546C18.66 16.143 17.661 16.539 16.579 16.539C16.032 16.539 15.492 16.449 14.973 16.287L15.828 17.142C15.897 17.211 15.918 17.313 15.876 17.4L15.021 18.81C14.931 18.963 14.757 19.044 14.583 19.008C11.139 18.153 8.358 15.372 7.503 11.928C7.467 11.754 7.548 11.58 7.698 11.49L9.10801 10.635C9.19801 10.572 9.30001 10.593 9.36901 10.662L10.224 11.517C10.134 11.013 10.053 10.458 10.053 9.939C10.053 8.859 10.449 7.857 11.046 7.02L10.092 6.066C9.94201 5.916 9.73501 5.865 9.54601 5.946L7.98901 6.579C7.81501 6.648 7.70701 6.819 7.70701 7.008C7.70701 7.59 7.88101 8.256 8.22001 8.838L6.91501 7.533C6.31801 8.37 5.92201 9.372 5.92201 10.452C5.92201 10.458 5.92201 10.461 5.92201 10.467L4.08201 9.957C4.23601 8.739 4.75501 7.593 5.52901 6.558L4.11901 5.148C4.26901 4.236 4.66501 3.381 5.26201 2.634C5.92201 1.779 6.84001 1.146 7.88401 0.816001C8.07301 0.747001 8.27701 0.849001 8.37001 1.023L9.78001 3.42C9.84901 3.537 9.81301 3.687 9.70801 3.78L8.16301 5.325C8.02801 4.509 7.62301 3.78 6.99001 3.222C6.31801 2.625 5.48101 2.229 4.56901 2.076L4.85401 2.91C5.64001 3.063 6.36001 3.441 6.91501 3.999L8.46001 2.454C8.25301 2.229 8.01301 2.022 7.74001 1.833C7.62301 1.743 7.45201 1.743 7.32301 1.833L5.61601 3.036C5.52601 3.105 5.52601 3.234 5.61601 3.303L6.42901 3.912C5.92501 4.383 5.52901 4.98 5.26201 5.616L3.98401 4.338C3.82201 4.188 3.59701 4.188 3.44701 4.338L2.073 5.712C1.923 5.862 1.923 6.087 2.073 6.237L3.42 7.584C3.27 8.028 3.153 8.49 3.084 8.952L2.073 9.963C1.923 10.113 1.923 10.338 2.073 10.488L3.447 11.862C3.597 12.012 3.822 12.012 3.984 11.862L5.262 10.584C5.616 11.22 6.087 11.817 6.645 12.3L5.616 13.329C5.526 13.398 5.526 13.527 5.616 13.596L6.99 14.97C7.14 15.12 7.365 15.12 7.515 14.97L8.889 13.596C9.447 14.154 10.113 14.625 10.842 14.97L9.708 16.104C9.558 16.254 9.558 16.479 9.708 16.629L11.082 17.994C11.232 18.144 11.457 18.144 11.607 17.994L12.981 16.629C13.254 16.719 13.536 16.788 13.83 16.842L12.552 18.12C12.39 18.27 12.39 18.495 12.552 18.645L13.926 20.019C14.076 20.169 14.301 20.169 14.451 20.019L15.825 18.645C16.071 18.69 16.326 18.711 16.579 18.711C17.659 18.711 18.66 18.315 19.497 17.679L20.526 18.708C20.676 18.858 20.901 18.858 21.051 18.708L22.425 17.334C22.575 17.184 22.575 16.959 22.425 16.809L21.051 15.435C21.906 14.607 22.425 13.518 22.425 12.3C22.425 10.008 20.697 8.118 18.414 7.722C18.297 7.704 18.18 7.773 18.144 7.89L17.586 9.879C17.523 10.104 17.64 10.329 17.865 10.398C19.536 10.887 20.58 12.519 19.947 14.187C19.74 14.733 19.335 15.183 18.816 15.435C18.228 15.723 17.562 15.84 16.902 15.75L16.579 14.232Z"></path></svg>
+                <span>Tél : 01 76 21 52 85</span>
+            </p>
+        </div>
+
+    </div>
+    <!-- ================================================================= -->
+    <!-- ================= FIN DE L'EN-TÊTE MODIFIABLE ================= -->
+    <!-- ================================================================= -->
+
+
+</body>
+</html>
+
+
+

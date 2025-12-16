@@ -1,0 +1,8 @@
+# Fichiers à ignorer
+node_modules/
+.expo/
+venv/
+__pycache__/
+*.db
+*.log
+.DS_Store
