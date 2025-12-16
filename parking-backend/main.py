@@ -36,3 +36,17 @@ def get_parkings():
         statement = select(ParkingSpot)
         results = session.exec(statement).all()
         return results
+
+# NOUVELLE ROUTE : Supprimer une place par son ID
+@app.delete("/parkings/{place_id}")
+def delete_parking(place_id: int):
+    with Session(engine) as session:
+        # 1. On cherche la place dans la base
+        spot = session.get(ParkingSpot, place_id)
+        
+        # 2. Si elle existe, on la supprime
+        if spot:
+            session.delete(spot)
+            session.commit()
+            return {"message": "Place supprimée"}
+        return {"error": "Place introuvable"}
