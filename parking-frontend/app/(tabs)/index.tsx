@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Alert, Dimensions } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Alert, Dimensions, Linking, Platform, ToastAndroid } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
 export default function App() {
   // ---------------------------------------------------------
-  // ⚠️ GARDEZ VOTRE IP (J'ai remis la vôtre ici)
+  // ⚠️ IP FIXÉE À .30
   // ---------------------------------------------------------
-  const IP_ADRESS = "192.168.0.27"; 
+  const IP_ADRESS = "192.168.0.30"; 
   const API_URL = `http://${IP_ADRESS}:8000`;
 
+  const mapRef = useRef(null); 
   const [parkings, setParkings] = useState([]);
 
   const initialRegion = {
@@ -19,24 +20,36 @@ export default function App() {
     longitudeDelta: 0.02,
   };
 
-  // --- 1. RÉCUPÉRER LES PLACES (GET) ---
+  const centerOnUser = async () => {
+    try {
+      let location = await Location.getCurrentPositionAsync({});
+      const userRegion = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      };
+      mapRef.current.animateToRegion(userRegion, 1000);
+    } catch (error) {
+      // Silence
+    }
+  };
+
   const fetchParkings = async () => {
     try {
       const response = await fetch(`${API_URL}/parkings`);
       const data = await response.json();
       setParkings(data);
     } catch (error) {
-      console.log(error);
-      Alert.alert("Erreur", "Impossible de joindre le serveur Python.");
+      // Silence
     }
   };
 
-  // --- 2. SIGNALER UNE PLACE (POST + GPS) ---
-  const reportParking = async () => {
+  const sendSpot = async (typeMessage) => {
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert("Erreur", "Permission GPS refusée.");
+        Alert.alert("Erreur", "GPS refusé.");
         return;
       }
 
@@ -45,7 +58,7 @@ export default function App() {
       const newPlace = {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        message: "Libre (GPS)",
+        message: typeMessage,
         status: "libre",
         created_at: new Date().toLocaleTimeString()
       };
@@ -56,46 +69,96 @@ export default function App() {
         body: JSON.stringify(newPlace),
       });
 
-      Alert.alert("Merci !", "Votre place a été partagée.");
+      // Ici on garde l'alerte pour remercier, mais on pourrait aussi mettre un Toast
+      Alert.alert("Merci !", "La communauté vous remercie.");
       fetchParkings(); 
+      centerOnUser();
 
     } catch (error) {
       Alert.alert("Erreur", "Échec de l'envoi.");
     }
   };
 
-  // --- 3. PRENDRE UNE PLACE (DELETE) --- 
-  // (C'EST CE BLOC QUI MANQUAIT DANS VOTRE VERSION)
-  const takePlace = (id) => {
+  const handleReportPress = () => {
     Alert.alert(
-      "Se garer ici ?",
-      "Confirmez-vous avoir pris cette place ?",
+      "Signaler une place",
+      "Quelle est la situation ?",
       [
         { text: "Annuler", style: "cancel" },
+        { text: "👀 J'ai vu une place", onPress: () => sendSpot("Vue par piéton 👀") },
+        { text: "🚗 Je libère ma place", onPress: () => sendSpot("Libérée par conducteur 🚗") }
+      ]
+    );
+  };
+
+  // --- LE MENU MODIFIÉ ---
+  const takePlace = (id, lat, long, message) => {
+    Alert.alert(
+      message, 
+      "Action rapide :",
+      [
+        // 3. FAUSSE - EN BAS (Destructif)
         { 
-          text: "Oui, je la prends", 
+          text: "❌ Fausse/Occupée", 
+          style: 'destructive',
           onPress: async () => {
             try {
-              // On appelle la route DELETE du serveur Python
               await fetch(`${API_URL}/parkings/${id}`, { method: 'DELETE' });
-              Alert.alert("Parfait", "La place a été retirée de la carte.");
-              fetchParkings(); // Mise à jour immédiate
+              
+              // Feedback NON BLOQUANT
+              if (Platform.OS === 'android') {
+                ToastAndroid.show("Place supprimée.", ToastAndroid.SHORT);
+              }
+              
+              fetchParkings();
             } catch (error) {
-              Alert.alert("Erreur", "Impossible de supprimer la place.");
+              Alert.alert("Erreur", "Problème réseau.");
             }
           }
+        },
+        // 2. JE ME GARE - AU MILIEU
+        { 
+          text: "✅ Garé !", 
+          onPress: async () => {
+            try {
+              await fetch(`${API_URL}/parkings/${id}`, { method: 'DELETE' });
+              
+              // Feedback NON BLOQUANT
+              if (Platform.OS === 'android') {
+                ToastAndroid.show("Super ! Bon stationnement.", ToastAndroid.SHORT);
+              }
+              // Sur iOS rien ne se passe, la place disparaît juste.
+              
+              fetchParkings();
+            } catch (error) {
+              Alert.alert("Erreur", "Problème réseau.");
+            }
+          }
+        },
+        // 1. GPS (GO !) - EN PREMIER
+        { 
+          text: "🗺️ GO !", 
+          onPress: () => {
+            // URL standard Google Maps universelle
+            const url = `https://www.google.com/maps/search/?api=1&query=${lat},${long}`;
+            Linking.openURL(url);
+          }
         }
-      ]
+      ],
+      { cancelable: true }
     );
   };
 
   useEffect(() => {
     fetchParkings();
+    const timer = setInterval(() => fetchParkings(), 5000);
+    return () => clearInterval(timer);
   }, []);
 
   return (
     <View style={styles.container}>
       <MapView 
+        ref={mapRef}
         style={styles.map} 
         initialRegion={initialRegion}
         showsUserLocation={true} 
@@ -103,29 +166,21 @@ export default function App() {
         {parkings.map((spot) => (
           <Marker
             key={spot.id ? spot.id.toString() : Math.random().toString()}
-            coordinate={{
-              latitude: spot.latitude,
-              longitude: spot.longitude,
-            }}
-            title={`Place #${spot.id}`}
-            description={"Appuyez ici pour vous garer"} 
+            coordinate={{ latitude: spot.latitude, longitude: spot.longitude }}
             pinColor={spot.status === "libre" ? "green" : "red"}
-            
-            // C'EST L'AUTRE LIGNE QUI MANQUAIT :
-            // Déclenche la fonction takePlace quand on clique sur la bulle
-            onCalloutPress={() => takePlace(spot.id)}
+            onPress={() => takePlace(spot.id, spot.latitude, spot.longitude, spot.message)}
           />
         ))}
       </MapView>
 
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.refreshButton} onPress={fetchParkings}>
-          <Text style={styles.btnIcon}>🔄</Text>
+        <TouchableOpacity style={styles.centerButton} onPress={centerOnUser}>
+          <Text style={styles.btnIcon}>🎯</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.reportButton} onPress={reportParking}>
+        <TouchableOpacity style={styles.reportButton} onPress={handleReportPress}>
           <Text style={styles.btnMainText}>P</Text>
-          <Text style={styles.btnSubText}>Je libère</Text>
+          <Text style={styles.btnSubText}>Signaler</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -139,7 +194,7 @@ const styles = StyleSheet.create({
     position: 'absolute', bottom: 50, left: 20, right: 20,
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end',
   },
-  refreshButton: {
+  centerButton: {
     backgroundColor: 'white', width: 50, height: 50, borderRadius: 25,
     justifyContent: 'center', alignItems: 'center', elevation: 5,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25,
